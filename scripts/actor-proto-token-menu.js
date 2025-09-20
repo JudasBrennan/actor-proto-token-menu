@@ -1,5 +1,5 @@
 
-/* Actor Prototype Token (Context Menu) - v1.1.2
+/* Actor Prototype Token (Context Menu) - v1.0
  * - Uses system Token sheet class when available.
  * - Constructs TokenDocument with Scene parent to supply units/grid.
  * - Suppresses noisy Handlebars warnings ONLY for missing fields.
