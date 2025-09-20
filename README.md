@@ -1,6 +1,6 @@
 # Actor Prototype Token (Context Menu)
 
-Adds a **“Prototype Token…”** option to the right-click context menu of Actors in the sidebar.  
+Adds a **“Prototype Token”** option to the right-click context menu of Actors in the sidebar.  
 Clicking it opens the system’s **Prototype Token configuration** window directly (the same one normally accessed from inside the Actor sheet).
 
 ---
@@ -21,14 +21,14 @@ Clicking it opens the system’s **Prototype Token configuration** window direct
 ### Option 1: Install via Manifest URL
 1. In Foundry: go to **Configuration → Manage Modules → Install Module**.
 2. Paste the manifest link to this repository’s `module.json`.  
-   *(Once you publish a release, copy the GitHub raw link here.)*
+   _https://github.com/JudasBrennan/actor-proto-token-menu/releases/latest/download/module.json_
 
 ### Option 2: Manual Install
 1. Download the latest release ZIP.  
-2. Extract it into your Foundry `Data/modules/` folder.  
+2. Extract it into your Foundry `foundryuserdata/Data/modules/` folder.  
    Path should look like:
    ```
-   Data/modules/actor-proto-token-menu/
+   foundryuserdata/Data/modules/actor-proto-token-menu/
    ```
 3. Restart Foundry and enable **Actor Prototype Token (Context Menu)** in **Manage Modules**.
 
