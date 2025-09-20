@@ -38,7 +38,7 @@ Clicking it opens the system’s **Prototype Token configuration** window direct
 
 1. Open the **Actors Directory** sidebar.  
 2. Right-click any Actor entry.  
-3. Select **Prototype Token…**.  
+3. Select **Prototype Token**.  
 4. The prototype token configuration window opens immediately.
 
 ---
