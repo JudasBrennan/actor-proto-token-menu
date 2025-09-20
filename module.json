@@ -5,7 +5,7 @@
   "compatibility": { "minimum": "13", "verified": "13" },
 
   "manifest": "https://github.com/JudasBrennan/actor-proto-token-menu/releases/latest/download/module.json",
-  "download": "https://github.com/JudasBrennan/actor-proto-token-menu/releases/latest/download/actor-proto-token-menu.zip",
+  "download": "https://github.com/JudasBrennan/actor-proto-token-menu/releases/latest/download/module.zip",
 
   "url": "https://github.com/JudasBrennan/actor-proto-token-menu",
   "readme": "https://github.com/JudasBrennan/actor-proto-token-menu#readme",
