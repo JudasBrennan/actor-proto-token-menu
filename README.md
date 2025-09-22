@@ -15,7 +15,7 @@ Clicking it opens the system’s **Prototype Token configuration** window direct
 ---
 
 ## 📦 Installation
-**Manifest URL** (paste into Foundry's installer):
+**Manifest URL** (paste into Foundry's module installer):
 ```
 https://github.com/JudasBrennan/actor-proto-token-menu/releases/latest/download/module.json
 ```

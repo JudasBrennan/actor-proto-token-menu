@@ -1,9 +1,8 @@
 
-/* Actor Prototype Token (Context Menu) - v1.1.0
- * Strategy: open the Actor's actual sheet and invoke the same action the
- * sheet uses for "Prototype Token" (configurePrototypeToken). If the sheet
- * wasn't already open, render it in a hidden "stealth" mode, trigger the action,
- * and close it immediately—so users never see the sheet flash.
+/* Actor Prototype Token (Context Menu) - v1.1.1
+ * Opens the real Prototype Token config from the Actors context menu.
+ * If the actor sheet wasn't open, we render it hidden ("stealth"), trigger
+ * the official action, then CLOSE the sheet and RESTORE all sheet options/classes.
  */
 
 const LOG_PREFIX = "actor-proto-token-menu";
@@ -61,19 +60,16 @@ function getOrCreateSheet(actor) {
 
 /** Preferred: call the v13 'configurePrototypeToken' action directly if present */
 function tryCallCoreAction(sheet) {
-  // 1) Instance-level (preferred)
   const inst = sheet?.options?.actions?.configurePrototypeToken;
   if (typeof inst === "function") {
     try { inst.call(sheet, new PointerEvent("click")); return true; }
     catch (e) { console.warn(`${LOG_PREFIX} | instance action threw`, e); }
   }
-  // 2) Concrete class DEFAULT_OPTIONS
   const cls = sheet?.constructor?.DEFAULT_OPTIONS?.actions?.configurePrototypeToken;
   if (typeof cls === "function") {
     try { cls.call(sheet, new PointerEvent("click")); return true; }
     catch (e) { console.warn(`${LOG_PREFIX} | class DEFAULT_OPTIONS action threw`, e); }
   }
-  // 3) Base ActorSheetV2 DEFAULT_OPTIONS
   const BaseV2 = foundry?.applications?.sheets?.ActorSheetV2;
   const base = BaseV2?.DEFAULT_OPTIONS?.actions?.configurePrototypeToken;
   if (typeof base === "function") {
@@ -136,8 +132,33 @@ function tryDomClick(sheet) {
   return false;
 }
 
+/** Apply stealth to a sheet; return a cleanup function that restores options & DOM */
+function applyStealth(sheet) {
+  const el = sheet.element?.[0] || sheet.element;
+  const prev = {
+    classes: Array.isArray(sheet.options?.classes) ? [...sheet.options.classes] : undefined,
+    focus: sheet.options?.focus
+  };
+
+  const classes = new Set([...(sheet.options?.classes ?? [])]);
+  classes.add("aptm-stealth");
+  sheet.options = { ...sheet.options, classes: [...classes], focus: false };
+  try { el?.classList?.add("aptm-stealth"); } catch (_) {}
+
+  return function cleanupStealth() {
+    try {
+      if (prev.classes) sheet.options.classes = prev.classes;
+      else if (sheet.options?.classes) {
+        sheet.options.classes = sheet.options.classes.filter(c => c != "aptm-stealth");
+      }
+      if (typeof prev.focus !== "undefined") sheet.options.focus = prev.focus;
+      (sheet.element?.[0] || sheet.element)?.classList?.remove("aptm-stealth");
+    } catch (_) {}
+  };
+}
+
 /** Open the real Prototype Token config via the Actor sheet.
- *  If sheet wasn't open, render in stealth, trigger action, then close immediately.
+ *  If sheet wasn't open, render in stealth, trigger action, then close & restore.
  */
 async function openRealPrototypeTokenStealth(actor) {
   installStealthCssOnce();
@@ -145,32 +166,32 @@ async function openRealPrototypeTokenStealth(actor) {
   const sheet = getOrCreateSheet(actor);
   const wasOpen = !!(sheet.rendered && !sheet._minimized);
 
-  // If not already open, render hidden (stealth) without focus
-  if (!wasOpen) {
-    sheet.options = { ...sheet.options, classes: [...new Set([...(sheet.options?.classes ?? []), "aptm-stealth"])], focus: false };
-    await sheet.render(true);
-    await new Promise(r => requestAnimationFrame(r));
-    try { (sheet.element?.[0] || sheet.element)?.classList?.add("aptm-stealth"); } catch (_) {}
-  } else {
-    await sheet.render(true);
-    await new Promise(r => requestAnimationFrame(r));
+  let cleanup = () => {};
+  try {
+    if (!wasOpen) {
+      cleanup = applyStealth(sheet);
+      await sheet.render(true);
+      await new Promise(r => requestAnimationFrame(r));
+    } else {
+      await sheet.render(true);
+      await new Promise(r => requestAnimationFrame(r));
+    }
+
+    const opened =
+      tryCallCoreAction(sheet) ||
+      tryActionDispatcher(sheet) ||
+      tryDomClick(sheet);
+
+    if (!opened) {
+      ui.notifications?.warn("Could not find the Prototype Token control on this sheet.");
+    }
+  } finally {
+    if (!wasOpen) {
+      try { await sheet.close({ force: true }); } catch (_) {}
+      try { cleanup(); } catch (_) {}
+    }
   }
-
-  let opened =
-    tryCallCoreAction(sheet) ||
-    tryActionDispatcher(sheet) ||
-    tryDomClick(sheet);
-
-  if (!opened) {
-    ui.notifications?.warn("Could not find the Prototype Token control on this sheet.");
-  }
-
-  if (!wasOpen) {
-    try { await sheet.close({ force: true }); } catch (_) {}
-    try { (sheet.element?.[0] || sheet.element)?.classList?.remove("aptm-stealth"); } catch (_) {}
-  }
-
-  return opened;
+  return true;
 }
 
 /** Insert our menu entry into the Actors directory context menu */
@@ -196,7 +217,6 @@ function pushEntry(menuItems, app) {
     }
   };
 
-  // Place after “Configure Ownership” if present, else append
   const idx = menuItems.findIndex(mi =>
     /ownership|permission/i.test(mi?.name ?? "") || /fa-user-gear|fa-user-shield/.test(mi?.icon ?? "")
   );

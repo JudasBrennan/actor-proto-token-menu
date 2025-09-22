@@ -1,13 +1,13 @@
 {
   "id": "actor-proto-token-menu",
   "title": "Actor Prototype Token (Context Menu)",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "compatibility": {
     "minimum": "13",
     "verified": "13"
   },
   "manifest": "https://github.com/JudasBrennan/actor-proto-token-menu/releases/latest/download/module.json",
-  "download": "https://github.com/JudasBrennan/actor-proto-token-menu/releases/latest/download/module.zip",
+  "download": "https://github.com/JudasBrennan/actor-proto-token-menu/releases/latest/download/actor-proto-token-menu.zip",
   "url": "https://github.com/JudasBrennan/actor-proto-token-menu",
   "readme": "https://github.com/JudasBrennan/actor-proto-token-menu#readme",
   "changelog": "https://github.com/JudasBrennan/actor-proto-token-menu/releases",
@@ -17,7 +17,7 @@
       "name": "Judas Brennan"
     }
   ],
-  "description": "Adds a 'Prototype Token…' option to the right-click menu of Actors in the sidebar.",
+  "description": "Adds a 'Prototype Token' option to the right-click menu of Actors in the sidebar.",
   "license": "MIT",
   "esmodules": [
     "scripts/actor-proto-token-menu.js"
